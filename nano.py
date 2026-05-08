@@ -25,36 +25,39 @@ def bot_reply(user_input: str) -> str:
 
 def bot_reply_stream(user_input: str) -> None:
     config = {"configurable": {"thread_id": "main"}}
-    tool_call_accumulator: dict[int, dict] = {}  # index -> {name, args}
-
     with get_openai_callback() as cb:
-        for chunk, metadata in agent.stream(
-            {"messages": [{"role": "user", "content": user_input}]},
-            config=config,
-            stream_mode="messages"
-        ):
-            if isinstance(chunk, AIMessageChunk):
-                if chunk.tool_call_chunks:
-                    for tc in chunk.tool_call_chunks:
-                        idx = tc.get("index", 0)
-                        if idx not in tool_call_accumulator:
-                            tool_call_accumulator[idx] = {"name": tc.get("name", ""), "args": ""}
-                        else:
-                            if tc.get("name"):
-                                tool_call_accumulator[idx]["name"] = tc["name"]
-                        tool_call_accumulator[idx]["args"] += tc.get("args") or ""
-                elif chunk.content:
-                    print(chunk.content, end="", flush=True)
-            elif isinstance(chunk, ToolMessage):
-                # Flush any pending tool calls now that we have complete args
-                for tc in tool_call_accumulator.values():
-                    print(f"\n[Tool Call]\n{tc['name']}({tc['args']})", flush=True)
-                    print("-" * 6)
-                tool_call_accumulator.clear()
-                print(f"[Tool Result]\n{chunk.name}\n{chunk.content}", flush=True)
-                print("-" * 6)
+        try:
+            for mode, data in agent.stream(
+                {"messages": [{"role": "user", "content": user_input}]},
+                config=config,
+                stream_mode=["messages", "updates"],
+            ):
+                if mode == "messages":
+                    # Token-by-token: only stream final AI text
+                    chunk, metadata = data
+                    if isinstance(chunk, AIMessageChunk) and chunk.content:
+                        print(chunk.content, end="", flush=True)
+
+                elif mode == "updates":
+                    # Complete node output: tool calls and tool results have full args here
+                    for node_name, state_delta in data.items():
+                        for msg in state_delta.get("messages", []):
+                            if hasattr(msg, "tool_calls") and msg.tool_calls:
+                                for tc in msg.tool_calls:
+                                    print(f"\n[Tool Call] {tc['name']}({tc['args']})", flush=True)
+                                    print("-" * 6, flush=True)
+                            elif isinstance(msg, ToolMessage):
+                                print(f"[Tool Result] {msg.name}", flush=True)
+                                print(msg.content, flush=True)
+                                print("-" * 6, flush=True)
+
+        except Exception as e:
+            print(f"\n[Error] {e}", flush=True)
     print()
-    print(f"(input: {cb.prompt_tokens}, output: {cb.completion_tokens}, total: {cb.total_tokens}, cost: ${cb.total_cost})")
+    print(
+        f"(input: {cb.prompt_tokens}, output: {cb.completion_tokens}, "
+        f"total: {cb.total_tokens}, cost: ${cb.total_cost})"
+    )
 
 
 @click.command()
