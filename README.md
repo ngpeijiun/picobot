@@ -1,23 +1,17 @@
-# nano-bot
+# Pico Bot
 
-A lightweight terminal-based AI assistant built for simplicity.
-
-It uses LangChain and OpenAI to support interactive chat.
-
-A safe `read_file` tool provides local, project-only file access.
+A lightweight terminal-based AI assistant for simple, interactive chat.
 
 ## Features
 
--   Simple terminal chat interface
--   Uses OpenAI models via LangChain
--   Maintains conversation state with LangGraph memory
--   Safe file-reading tool for project-local files
--   Displays tool calls and tool results in the terminal for transparency
--   Shows token usage and estimated cost per response
+-   Terminal chat interface
+-   OpenAI integration via LangChain
+-   Conversation memory
+-   Safe local file access
 
-## Example
+## Screenshot
 
-![Screenshot](https://raw.githubusercontent.com/ngpeijiun/nano-bot/master/assets/screenshot.png)
+![Screenshot](https://raw.githubusercontent.com/ngpeijiun/picobot/master/assets/screenshot.png)
 
 ## Installation
 
@@ -26,14 +20,24 @@ A safe `read_file` tool provides local, project-only file access.
 -   Python 3.12 (tested)
 -   An OpenAI API key
 
-### Setup
+### For Users
+
+Install Pico Bot from PyPI:
 
 ```bash
-git clone git@github.com:ngpeijiun/nano-bot.git
-cd nano-bot
+pip install picobot
+```
+
+### For Development
+
+Clone the repository and install in editable mode:
+
+```bash
+git clone git@github.com:ngpeijiun/picobot.git
+cd picobot
 python -m venv .venv
 source .venv/bin/activate   # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
+pip install -e .
 ```
 
 ## Configuration
@@ -53,17 +57,10 @@ $env:OPENAI_API_KEY="your_api_key"
 ## Usage
 
 ```bash
-python nano.py
+picobot
 ```
 
 Type `exit` or `quit` to leave the session.
-
-## Project Structure
-
--   `nano.py` - CLI chat application
--   `read_file.py` - safe file-reading tool
--   `requirements.txt` - Python dependencies
--   `README.md` - project documentation
 
 ## Safety
 
