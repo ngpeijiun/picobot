@@ -3,6 +3,9 @@ from langchain.agents import create_agent
 from langchain_core.messages import AIMessageChunk, ToolMessage
 from langchain_community.callbacks import get_openai_callback
 from langgraph.checkpoint.memory import MemorySaver
+from rich.console import Console
+from rich.live import Live
+from rich.panel import Panel
 
 from read_file import read_file
 
@@ -13,48 +16,58 @@ agent = create_agent(
     system_prompt="Keep your response concise.",
 )
 
-
-def bot_reply(user_input: str) -> str:
-    config = {"configurable": {"thread_id": "main"}}
-    with get_openai_callback() as cb:
-        result = agent.invoke({"messages": [{"role": "user", "content": user_input}]}, config=config)
-    response = result["messages"][-1].content
-    usage_text = f"(input: {cb.prompt_tokens}, output: {cb.completion_tokens}, total: {cb.total_tokens}, cost: ${cb.total_cost})"
-    return f"{response}\n{usage_text}"
+console = Console()
 
 
 def bot_reply_stream(user_input: str) -> None:
     config = {"configurable": {"thread_id": "main"}}
+    bot_text = ""
+
     with get_openai_callback() as cb:
         try:
-            for mode, data in agent.stream(
-                {"messages": [{"role": "user", "content": user_input}]},
-                config=config,
-                stream_mode=["messages", "updates"],
-            ):
-                if mode == "messages":
-                    # Token-by-token: only stream final AI text
-                    chunk, metadata = data
-                    if isinstance(chunk, AIMessageChunk) and chunk.content:
-                        print(chunk.content, end="", flush=True)
+            with Live(
+                Panel("", title="Bot", title_align="left", style="green"),
+                console=console,
+                refresh_per_second=10,
+            ) as live:
+                for mode, data in agent.stream(
+                    {"messages": [{"role": "user", "content": user_input}]},
+                    config=config,
+                    stream_mode=["messages", "updates"],
+                ):
+                    if mode == "messages":
+                        chunk, metadata = data
+                        if isinstance(chunk, AIMessageChunk) and chunk.content:
+                            bot_text += chunk.content
+                            live.update(Panel(bot_text, title="Bot", title_align="left", style="green"))
 
-                elif mode == "updates":
-                    # Complete node output: tool calls and tool results have full args here
-                    for node_name, state_delta in data.items():
-                        for msg in state_delta.get("messages", []):
-                            if hasattr(msg, "tool_calls") and msg.tool_calls:
-                                for tc in msg.tool_calls:
-                                    print(f"\n[Tool Call] {tc['name']}({tc['args']})", flush=True)
-                                    print("-" * 6, flush=True)
-                            elif isinstance(msg, ToolMessage):
-                                print(f"[Tool Result] {msg.name}", flush=True)
-                                print(msg.content, flush=True)
-                                print("-" * 6, flush=True)
+                    elif mode == "updates":
+                        for node_name, state_delta in data.items():
+                            for msg in state_delta.get("messages", []):
+                                if hasattr(msg, "tool_calls") and msg.tool_calls:
+                                    for tc in msg.tool_calls:
+                                        console.print(
+                                            Panel(
+                                                f"{tc['name']}({tc['args']})",
+                                                title="Tool Call",
+                                                title_align="left",
+                                                style="yellow",
+                                            )
+                                        )
+                                elif isinstance(msg, ToolMessage):
+                                    console.print(
+                                        Panel(
+                                            msg.content.strip(),
+                                            title=f"Tool Result: {msg.name}",
+                                            title_align="left",
+                                            style="cyan",
+                                        )
+                                    )
 
         except Exception as e:
-            print(f"\n[Error] {e}", flush=True)
-    print()
-    print(
+            console.print(f"[red][Error][/red] {e}")
+
+    console.print(
         f"(input: {cb.prompt_tokens}, output: {cb.completion_tokens}, "
         f"total: {cb.total_tokens}, cost: ${cb.total_cost})"
     )
@@ -71,8 +84,7 @@ def chat():
             click.echo("Bot: Bye!")
             break
 
-        #click.echo(f"Bot: {bot_reply(user_input)}")
-        print("Bot: ", end="", flush=True)
+        console.print(Panel(user_input, title="You", title_align="left", style="blue"))
         bot_reply_stream(user_input)
 
 
