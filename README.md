@@ -9,23 +9,15 @@ A safe `read_file` tool provides local, project-only file access.
 ## Features
 
 -   Simple terminal chat interface
--   Uses OpenAI via LangChain
+-   Uses OpenAI models via LangChain
 -   Maintains conversation state with LangGraph memory
 -   Safe file-reading tool for project-local files
+-   Displays tool calls and tool results in the terminal for transparency
 -   Shows token usage and estimated cost per response
 
 ## Example
 
-```terminal
-Bot: Hello! Type 'exit' to quit.
-You: read README.md
-You: hi
-Bot: Hi! How can I help?
-(input: 130, output: 10, total: 140, cost: $0.0)
-You: read README.md
-Bot: Read `README.md`. It describes **nano-bot**, a lightweight terminal AI assistant using LangChain/OpenAI, with a safe project-local `read_file` tool, setup/install steps, usage, project structure, safety notes, and roadmap.
-(input: 725, output: 70, total: 795, cost: $0.0)
-```
+![App Screenshot](./assets/screenshot.png)
 
 ## Installation
 
@@ -49,13 +41,13 @@ pip install -r requirements.txt
 Set your OpenAI API key in your environment:
 
 ```bash
-export OPEN_AI_KEY="your_api_key"
+export OPENAI_API_KEY="your_api_key"
 ```
 
 On Windows PowerShell:
 
 ```powershell
-$env:OPEN_AI_KEY="your_api_key"
+$env:OPENAI_API_KEY="your_api_key"
 ```
 
 ## Usage
@@ -81,7 +73,6 @@ The `read_file` tool only allows access to files inside the project root directo
 
 -   Add more tools
 -   Add tests
--   Support streaming output
 -   Improve configuration and error handling
 
 ## License

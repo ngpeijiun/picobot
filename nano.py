@@ -26,7 +26,7 @@ def bot_reply_stream(user_input: str) -> None:
     with get_openai_callback() as cb:
         try:
             with Live(
-                Panel("", title="Bot", title_align="left", style="green"),
+                Panel("", title="Bot", title_align="left", style="cornflower_blue"),
                 console=console,
                 refresh_per_second=10,
             ) as live:
@@ -39,7 +39,7 @@ def bot_reply_stream(user_input: str) -> None:
                         chunk, metadata = data
                         if isinstance(chunk, AIMessageChunk) and chunk.content:
                             bot_text += chunk.content
-                            live.update(Panel(bot_text, title="Bot", title_align="left", style="green"))
+                            live.update(Panel(bot_text, title="Bot", title_align="left", style="cornflower_blue"))
 
                     elif mode == "updates":
                         for node_name, state_delta in data.items():
@@ -51,7 +51,7 @@ def bot_reply_stream(user_input: str) -> None:
                                                 f"{tc['name']}({tc['args']})",
                                                 title="Tool Call",
                                                 title_align="left",
-                                                style="yellow",
+                                                style="gold3",
                                             )
                                         )
                                 elif isinstance(msg, ToolMessage):
@@ -84,7 +84,7 @@ def chat():
             click.echo("Bot: Bye!")
             break
 
-        console.print(Panel(user_input, title="You", title_align="left", style="blue"))
+        console.print(Panel(user_input, title="You", title_align="left", style="slate_blue1"))
         bot_reply_stream(user_input)
 
 
