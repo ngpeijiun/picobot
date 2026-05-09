@@ -7,7 +7,7 @@ from rich.console import Console
 from rich.live import Live
 from rich.panel import Panel
 
-from read_file import read_file
+from .read_file import read_file
 
 agent = create_agent(
     model="gpt-5.4-mini",

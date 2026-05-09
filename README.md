@@ -17,7 +17,7 @@ A safe `read_file` tool provides local, project-only file access.
 
 ## Example
 
-![App Screenshot](./assets/screenshot.png)
+![Screenshot](https://raw.githubusercontent.com/ngpeijiun/nano-bot/master/assets/screenshot.png)
 
 ## Installation
 
