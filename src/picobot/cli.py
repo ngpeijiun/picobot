@@ -3,9 +3,9 @@ from langchain.agents import create_agent
 from langchain_core.messages import AIMessageChunk, ToolMessage
 from langchain_community.callbacks import get_openai_callback
 from langgraph.checkpoint.memory import MemorySaver
-from rich.console import Console
+from rich.console import Console, Group
 from rich.live import Live
-from rich.panel import Panel
+from rich.text import Text
 
 from .read_file import read_file
 
@@ -19,6 +19,17 @@ agent = create_agent(
 console = Console()
 
 
+def block(title: str, content: str, style: str) -> Group:
+    w = console.width
+    top = f"\u2500 {title} " + "\u2500" * (w - len(f"\u2500 {title} "))
+    bot = "\u2500" * w
+    return Group(
+        Text(top, style=style),
+        Text(content, style=style),
+        Text(bot, style=style),
+    )
+
+
 def bot_reply_stream(user_input: str) -> None:
     config = {"configurable": {"thread_id": "main"}}
     bot_text = ""
@@ -26,7 +37,7 @@ def bot_reply_stream(user_input: str) -> None:
     with get_openai_callback() as cb:
         try:
             with Live(
-                Panel("", title="Bot", title_align="left", style="cornflower_blue"),
+                block("Bot", "", "cornflower_blue"),
                 console=console,
                 refresh_per_second=10,
             ) as live:
@@ -39,30 +50,16 @@ def bot_reply_stream(user_input: str) -> None:
                         chunk, metadata = data
                         if isinstance(chunk, AIMessageChunk) and chunk.content:
                             bot_text += chunk.content
-                            live.update(Panel(bot_text, title="Bot", title_align="left", style="cornflower_blue"))
+                            live.update(block("Bot", bot_text, "cornflower_blue"))
 
                     elif mode == "updates":
                         for node_name, state_delta in data.items():
                             for msg in state_delta.get("messages", []):
                                 if hasattr(msg, "tool_calls") and msg.tool_calls:
                                     for tc in msg.tool_calls:
-                                        console.print(
-                                            Panel(
-                                                f"{tc['name']}({tc['args']})",
-                                                title="Tool Call",
-                                                title_align="left",
-                                                style="gold3",
-                                            )
-                                        )
+                                        console.print(block("Tool Call", f"{tc['name']}({tc['args']})", "gold3"))
                                 elif isinstance(msg, ToolMessage):
-                                    console.print(
-                                        Panel(
-                                            msg.content.strip(),
-                                            title=f"Tool Result: {msg.name}",
-                                            title_align="left",
-                                            style="cyan",
-                                        )
-                                    )
+                                    console.print(block(f"Tool Result: {msg.name}", msg.content.strip(), "cyan"))
 
         except Exception as e:
             console.print(f"[red][Error][/red] {e}")
@@ -84,7 +81,7 @@ def chat():
             click.echo("Bot: Bye!")
             break
 
-        console.print(Panel(user_input, title="You", title_align="left", style="slate_blue1"))
+        console.print(block("You", user_input, "slate_blue1"))
         bot_reply_stream(user_input)
 
 
