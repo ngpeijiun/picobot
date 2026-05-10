@@ -8,10 +8,11 @@ from rich.live import Live
 from rich.text import Text
 
 from .read_file import read_file
+from .list_dir import list_dir
 
 agent = create_agent(
     model="gpt-5.4-mini",
-    tools=[read_file],
+    tools=[read_file, list_dir],
     checkpointer=MemorySaver(),
     system_prompt="Keep your response concise.",
 )
