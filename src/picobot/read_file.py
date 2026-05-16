@@ -7,15 +7,19 @@ MAX_FILE_SIZE = 50 * 1024  # 50 KB
 
 @tool
 def read_file(path: str) -> str:
-    """read file"""
+    """Read a text file.
+
+    Args:
+        path: A file path to read.
+    """
+
     try:
         full_path = resolve_project_path(path)
 
         if full_path.stat().st_size > MAX_FILE_SIZE:
             raise ToolException(f"File too large (>50KB): {path}")
 
-        with open(full_path, "r") as f:
-            return f.read()
+        return full_path.read_text(encoding="utf-8")
 
     except FileNotFoundError:
         raise ToolException(f"File not found: {path}")

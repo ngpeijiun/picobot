@@ -7,14 +7,14 @@ from rich.console import Console, Group
 from rich.live import Live
 from rich.text import Text
 
-from .read_file import read_file
 from .list_dir import list_dir
+from .read_file import read_file
 
 agent = create_agent(
     model="gpt-5.4-mini",
-    tools=[read_file, list_dir],
+    tools=[list_dir, read_file],
     checkpointer=MemorySaver(),
-    system_prompt="Keep your response concise.",
+    system_prompt="Keep your response concise. Make any changes minimal and non-disruptive.",
 )
 
 console = Console()
