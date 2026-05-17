@@ -70,11 +70,15 @@ Pico Bot uses this file to configure `list_dir` defaults.
 Example:
 
 ```toml
-[tree]
+[list_dir]
 ignore = [".git", ".venv", "__pycache__", "dist"]
 max_depth = 4
 max_entries = 500
 ```
+
+## Backward Compatibility
+
+See [Backward Compatibility](BACKWARD_COMPATIBILITY.md) for legacy config support. This backward compatibility will be dropped in the official 1.0 release.
 
 ## Usage
 

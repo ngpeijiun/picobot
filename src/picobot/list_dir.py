@@ -17,8 +17,8 @@ def list_dir(path: str = ".", depth: int = 0) -> str:
         if depth < 0:
             raise ToolException("depth must be >= 0")
 
-        depth = min(depth, CONFIG.tree.max_depth)
-        max_entries = CONFIG.tree.max_entries
+        depth = min(depth, CONFIG.list_dir.max_depth)
+        max_entries = CONFIG.list_dir.max_entries
         full_path = resolve_project_path(path)
 
         if not full_path.exists():

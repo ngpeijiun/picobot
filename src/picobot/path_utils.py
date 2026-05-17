@@ -53,14 +53,14 @@ def is_ignored_path(child: Path, ignore: list[str] | None = None) -> bool:
 
     Args:
         child: The path to check.
-        ignore: Optional custom ignore list. Uses the configured tree ignore
+        ignore: Optional custom ignore list. Uses the configured list_dir ignore
             list when omitted.
 
     Returns:
         True if the path matches an ignore rule, otherwise False.
     """
 
-    ignore_list = CONFIG.tree.ignore if ignore is None else ignore
+    ignore_list = CONFIG.list_dir.ignore if ignore is None else ignore
     return any(
         ignore_item == child.name
         or (

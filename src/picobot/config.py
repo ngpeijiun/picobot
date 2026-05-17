@@ -14,7 +14,7 @@ class ConfigError(Exception):
 
 
 @dataclass
-class TreeConfig:
+class ListDirConfig:
     ignore: list[str] = field(default_factory=lambda: DEFAULT_IGNORE.copy())
     max_depth: int = 4
     max_entries: int = 500
@@ -22,7 +22,7 @@ class TreeConfig:
 
 @dataclass
 class AppConfig:
-    tree: TreeConfig = field(default_factory=TreeConfig)
+    list_dir: ListDirConfig = field(default_factory=ListDirConfig)
 
 
 def load_config() -> AppConfig:
@@ -39,24 +39,24 @@ def load_config() -> AppConfig:
     except tomllib.TOMLDecodeError as e:
         raise ConfigError(f"Invalid TOML in config file {CONFIG_PATH}: {e}") from e
 
-    tree_data = data.get("tree", {})
-    if not isinstance(tree_data, dict):
-        raise ConfigError("[tree] section must be a table")
+    list_dir_data = data.get("list_dir", data.get("tree", {}))
+    if not isinstance(list_dir_data, dict):
+        raise ConfigError("[list_dir] section must be a table")
 
-    ignore = tree_data.get("ignore", cfg.tree.ignore)
+    ignore = list_dir_data.get("ignore", cfg.list_dir.ignore)
     if not isinstance(ignore, list) or not all(isinstance(x, str) for x in ignore):
-        raise ConfigError("[tree.ignore] must be a list of strings")
-    cfg.tree.ignore = list(ignore)
+        raise ConfigError("[list_dir.ignore] must be a list of strings")
+    cfg.list_dir.ignore = list(ignore)
 
-    max_depth = tree_data.get("max_depth", cfg.tree.max_depth)
+    max_depth = list_dir_data.get("max_depth", cfg.list_dir.max_depth)
     if not isinstance(max_depth, int) or isinstance(max_depth, bool):
-        raise ConfigError("[tree.max_depth] must be an integer")
-    cfg.tree.max_depth = max_depth
+        raise ConfigError("[list_dir.max_depth] must be an integer")
+    cfg.list_dir.max_depth = max_depth
 
-    max_entries = tree_data.get("max_entries", cfg.tree.max_entries)
+    max_entries = list_dir_data.get("max_entries", cfg.list_dir.max_entries)
     if not isinstance(max_entries, int) or isinstance(max_entries, bool):
-        raise ConfigError("[tree.max_entries] must be an integer")
-    cfg.tree.max_entries = max_entries
+        raise ConfigError("[list_dir.max_entries] must be an integer")
+    cfg.list_dir.max_entries = max_entries
 
     return cfg
 
