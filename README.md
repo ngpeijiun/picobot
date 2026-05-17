@@ -4,13 +4,14 @@ A lightweight terminal-based AI assistant for simple, interactive chat.
 
 ## Features
 
--   Terminal chat interface
--   OpenAI integration via LangChain
--   Conversation memory
--   Safe local file access
--   Directory tree support in `list_dir`
--   `config.toml` support for `list_dir` defaults
--   Git-like ignore patterns to reduce token usage and improve privacy
+-   Terminal-based chat interface for quick, interactive use
+-   OpenAI integration powered by LangChain
+-   Conversation memory to preserve context during a session
+-   Safe local file access limited to the project root
+-   Recursive directory listing support
+-   `config.toml` support for customizing directory listing defaults
+-   Git-like ignore patterns to reduce noise, token usage, and accidental exposure of unneeded files
+-   Accurate cost tracking with cached input token support, down to 6 decimal places
 
 ## Screenshot
 
