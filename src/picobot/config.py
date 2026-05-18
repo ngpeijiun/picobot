@@ -2,11 +2,9 @@ from dataclasses import dataclass, field
 from pathlib import Path
 import tomllib
 
-from platformdirs import user_config_dir
+CONFIG_PATH = Path.home() / ".config" / "picobot" / "config.toml"
 
-CONFIG_PATH = Path(user_config_dir("picobot")) / "config.toml"
-
-DEFAULT_IGNORE = [".git", ".venv", "__pycache__"]
+DEFAULT_IGNORE = [".git/", ".venv/", "__pycache__/"]
 
 
 class ConfigError(Exception):

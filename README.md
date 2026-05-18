@@ -62,8 +62,16 @@ $env:OPENAI_API_KEY="your_api_key"
 
 You can place a `config.toml` file in your Pico Bot user config directory. Pico Bot reads it from:
 
+On Linux and macOS:
+
 ```text
 ~/.config/picobot/config.toml
+```
+
+On Windows:
+
+```text
+C:\Users\<YourName>\.config\picobot\config.toml
 ```
 
 Pico Bot uses this file to configure `list_dir` defaults.
@@ -72,14 +80,18 @@ Example:
 
 ```toml
 [list_dir]
-ignore = [".git", ".venv", "__pycache__", "dist"]
+ignore = [".git/", ".venv/", "__pycache__/", "dist/"]
 max_depth = 4
 max_entries = 500
 ```
 
+Notes:
+- `".venv"` ignores both a file named `.venv` and a directory named `.venv/`
+- `".venv/"` ignores only the directory `.venv/`
+
 ## Backward Compatibility
 
-See [Backward Compatibility](BACKWARD_COMPATIBILITY.md) for legacy config support. This backward compatibility will be dropped in the official 1.0 release.
+See [Backward Compatibility](https://github.com/ngpeijiun/picobot/blob/master/BACKWARD_COMPATIBILITY.md) for legacy config support. This backward compatibility will be dropped in the official 1.0 release.
 
 ## Usage
 
@@ -93,7 +105,7 @@ Type `exit` or `quit` to leave the session.
 
 The `read_file` and `list_dir` tools only allow access to files inside the project root directory. This helps prevent path traversal outside the repository.
 
-The `list_dir` tool supports ignore patterns to reduce noise, token usage, and accidental exposure of unneeded files. This is intended for convenience only; it is **not** a security boundary and should not be relied on to protect secrets.
+The `list_dir` tool supports simple gitignore-like ignore patterns to reduce noise, token usage, and accidental exposure of unneeded files. This is intended for convenience only; it is **not** a security boundary and should not be relied on to protect secrets.
 
 ## Roadmap
 

@@ -49,7 +49,9 @@ def display_path(full_path: Path) -> str:
 def is_ignored_path(child: Path, ignore: list[str] | None = None) -> bool:
     """Determine whether a path should be ignored.
 
-    The ignore rules follow simple gitignore-like directory matching.
+    Rules:
+    - `.venv` ignores both a file named `.venv` and a directory named `.venv/`
+    - `.venv/` ignores only a directory named `.venv/`
 
     Args:
         child: The path to check.
@@ -61,12 +63,10 @@ def is_ignored_path(child: Path, ignore: list[str] | None = None) -> bool:
     """
 
     ignore_list = CONFIG.list_dir.ignore if ignore is None else ignore
-    return any(
-        ignore_item == child.name
-        or (
-            ignore_item.endswith("/")
-            and child.is_dir()
-            and child.name == ignore_item[:-1]
-        )
-        for ignore_item in ignore_list
-    )
+    for ignore_item in ignore_list:
+        if ignore_item.endswith("/"):
+            if child.is_dir() and child.name == ignore_item[:-1]:
+                return True
+        elif ignore_item == child.name:
+            return True
+    return False
