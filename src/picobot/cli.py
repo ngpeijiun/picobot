@@ -9,12 +9,16 @@ from rich.text import Text
 
 from .list_dir import list_dir
 from .read_file import read_file
+from .write_file import write_file
+from .edit_file import edit_file
+from .move_path import move_path
+from .delete_path import delete_path
 
 model = ChatOpenAI(model="gpt-5.4-mini", stream_usage=True)
 
 agent = create_agent(
     model=model,
-    tools=[list_dir, read_file],
+    tools=[list_dir, read_file, write_file, edit_file, move_path, delete_path],
     checkpointer=MemorySaver(),
     system_prompt="Keep your response concise. Make any changes minimal and non-disruptive.",
 )

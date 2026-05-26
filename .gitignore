@@ -1,4 +1,12 @@
+# Virtual environment
 .venv/
+
+# Python cache / build artifacts
 __pycache__/
 dist/
+
+# Packaging metadata
 *.egg-info/
+
+# OS-specific files
+.DS_Store
