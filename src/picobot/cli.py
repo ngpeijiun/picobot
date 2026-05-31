@@ -1,23 +1,22 @@
 import click
 from langchain.agents import create_agent
 from langchain_core.messages import AIMessageChunk, ToolMessage
-from langchain_openai import ChatOpenAI
 from langgraph.checkpoint.memory import MemorySaver
 from rich.console import Console, Group
 from rich.live import Live
 from rich.text import Text
 
-from .list_dir import list_dir
-from .read_file import read_file
-from .write_file import write_file
-from .edit_file import edit_file
-from .move_path import move_path
-from .delete_path import delete_path
-
-model = ChatOpenAI(model="gpt-5.4-mini", stream_usage=True)
+from .tools import (
+    delete_path,
+    edit_file,
+    list_dir,
+    move_path,
+    read_file,
+    write_file,
+)
 
 agent = create_agent(
-    model=model,
+    model="openai:gpt-5.4-mini",
     tools=[list_dir, read_file, write_file, edit_file, move_path, delete_path],
     checkpointer=MemorySaver(),
     system_prompt="Keep your response concise. Make any changes minimal and non-disruptive.",

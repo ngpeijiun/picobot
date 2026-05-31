@@ -1,6 +1,6 @@
 from langchain_core.tools import ToolException, tool
 
-from .config import CONFIG
+from ..config import CONFIG
 from .path_utils import display_path, is_ignored_path, resolve_project_path
 
 

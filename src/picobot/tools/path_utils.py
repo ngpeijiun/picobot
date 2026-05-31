@@ -2,7 +2,7 @@ from pathlib import Path
 
 from langchain_core.tools import ToolException
 
-from .config import CONFIG
+from ..config import CONFIG
 
 PROJECT_ROOT = Path.cwd().resolve()
 
