@@ -1,6 +1,7 @@
 import click
 from langchain.agents import create_agent
 from langchain_core.messages import AIMessageChunk, ToolMessage
+from langchain_openai import ChatOpenAI
 from langgraph.checkpoint.memory import MemorySaver
 from rich.console import Console, Group
 from rich.live import Live
@@ -15,8 +16,13 @@ from .tools import (
     write_file,
 )
 
+model = ChatOpenAI(
+    model="gpt-5.6-luna",
+    reasoning_effort="none"
+)
+
 agent = create_agent(
-    model="openai:gpt-5.4-mini",
+    model=model,
     tools=[list_dir, read_file, write_file, edit_file, move_path, delete_path],
     checkpointer=MemorySaver(),
     system_prompt="Keep your response concise. Make any changes minimal and non-disruptive.",
