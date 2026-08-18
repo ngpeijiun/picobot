@@ -20,6 +20,39 @@ picobot
 
 Type `exit` or `quit` to leave the session.
 
+## Reuse as a Library
+
+Other agent developers can import Pico Bot's file tools individually and plug them into their own LangChain agent.
+
+```python
+from langchain.agents import create_agent
+from picobot.tools import (
+    delete_path,
+    edit_file,
+    list_dir,
+    move_path,
+    read_file,
+    write_file,
+)
+
+agent = create_agent(
+    model="openai:gpt-5.4-mini",
+    tools=[list_dir, read_file, write_file, edit_file, move_path, delete_path],
+    system_prompt="Use the file tools carefully.",
+)
+
+result = agent.invoke({
+    "messages": [{"role": "user", "content": "List the current directory."}]
+})
+print(result)
+```
+
+You can import only the tools your agent needs:
+
+```python
+from picobot.tools import read_file, write_file
+```
+
 ## Screenshot
 
 ### File Analysis
