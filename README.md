@@ -22,22 +22,15 @@ Type `exit` or `quit` to leave the session.
 
 ## Reuse as a Library
 
-Other agent developers can import Pico Bot's file tools individually and plug them into their own LangChain agent.
+Other agent developers can import Pico Bot's file tools directly and plug them into their own LangChain agent.
 
 ```python
 from langchain.agents import create_agent
-from picobot.tools import (
-    delete_path,
-    edit_file,
-    list_dir,
-    move_path,
-    read_file,
-    write_file,
-)
+from picobot.tools import get_tools
 
 agent = create_agent(
     model="openai:gpt-5.4-mini",
-    tools=[list_dir, read_file, write_file, edit_file, move_path, delete_path],
+    tools=get_tools(),
     system_prompt="Use the file tools carefully.",
 )
 
@@ -47,7 +40,7 @@ result = agent.invoke({
 print(result)
 ```
 
-You can import only the tools your agent needs:
+You can also import individual tools if you only need a subset:
 
 ```python
 from picobot.tools import read_file, write_file
@@ -62,6 +55,12 @@ from picobot.tools import read_file, write_file
 ### File Editing
 
 ![File Editing](https://raw.githubusercontent.com/ngpeijiun/picobot/master/assets/editing.png)
+
+### Web Search
+
+![Web Search 1](https://raw.githubusercontent.com/ngpeijiun/picobot/master/assets/web-search-1.png)
+
+![Web Search 2](https://raw.githubusercontent.com/ngpeijiun/picobot/master/assets/web-search-2.png)
 
 ## Installation
 
@@ -134,6 +133,30 @@ max_entries = 500
 Notes:
 - `".venv"` ignores both a file named `.venv` and a directory named `.venv/`
 - `".venv/"` ignores only the directory `.venv/`
+
+## Optional Capabilities
+
+### Web Search
+
+Enable web search by installing the optional dependency and setting a Tavily API key:
+
+```bash
+pip install "picobot[web-search]"
+export TAVILY_API_KEY="your-api-key"
+```
+
+On Windows PowerShell:
+
+```powershell
+pip install "picobot[web-search]"
+$env:TAVILY_API_KEY="your-api-key"
+```
+
+After setting the API key, start Pico Bot with web search enabled:
+
+```bash
+picobot --web-search
+```
 
 ## Safety
 

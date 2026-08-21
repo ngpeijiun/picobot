@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "picobot"
-version = "0.4"
+version = "0.5"
 description = "A tiny bot built for simplicity"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -20,6 +20,11 @@ dependencies = [
 [project.urls]
 Homepage = "https://github.com/ngpeijiun/picobot"
 Repository = "https://github.com/ngpeijiun/picobot"
+
+[project.optional-dependencies]
+web-search = [
+    "langchain-tavily==0.2.18",
+]
 
 [project.scripts]
 picobot = "picobot.cli:chat"

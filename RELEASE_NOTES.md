@@ -4,7 +4,8 @@
 
 - Upgraded model to `gpt-5.6-luna`.
 - Upgraded LangChain dependencies.
-- Added README documentation showing how to reuse the file tools as a LangChain agent library.
+- Added optional Tavily web search support to the CLI.
+- Added to README the documentation to reuse the file tools as a LangChain agent library.
 
 ## 0.4
 

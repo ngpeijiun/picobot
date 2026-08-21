@@ -7,26 +7,21 @@ from rich.console import Console, Group
 from rich.live import Live
 from rich.text import Text
 
-from .tools import (
-    delete_path,
-    edit_file,
-    list_dir,
-    move_path,
-    read_file,
-    write_file,
-)
+from .tools import get_tools
 
 model = ChatOpenAI(
     model="gpt-5.6-luna",
-    reasoning_effort="none"
+    reasoning_effort="none",
 )
 
-agent = create_agent(
-    model=model,
-    tools=[list_dir, read_file, write_file, edit_file, move_path, delete_path],
-    checkpointer=MemorySaver(),
-    system_prompt="Keep your response concise. Make any changes minimal and non-disruptive.",
-)
+def create_chat_agent(enable_web_search: bool):
+    tools = get_tools(enable_web_search=enable_web_search)
+    return create_agent(
+        model=model,
+        tools=tools,
+        checkpointer=MemorySaver(),
+        system_prompt="Keep your response concise. Make any changes minimal and non-disruptive.",
+    )
 
 console = Console()
 session_cost = 0.0
@@ -43,7 +38,7 @@ def block(title: str, content: str, style: str) -> Group:
     )
 
 
-def bot_reply_stream(user_input: str) -> None:
+def bot_reply_stream(agent, user_input: str) -> None:
     global session_cost
     config = {"configurable": {"thread_id": "main"}}
     bot_text = ""
@@ -99,7 +94,14 @@ def bot_reply_stream(user_input: str) -> None:
 
 
 @click.command()
-def chat():
+@click.option(
+    "--web-search",
+    is_flag=True,
+    default=False,
+    help="Enable Tavily web search.",
+)
+def chat(web_search: bool):
+    agent = create_chat_agent(web_search)
     click.echo("Bot: Hello! Type 'exit' to quit.")
 
     while True:
@@ -110,7 +112,7 @@ def chat():
             break
 
         console.print(block("You", user_input, "slate_blue1"))
-        bot_reply_stream(user_input)
+        bot_reply_stream(agent, user_input)
 
 
 if __name__ == "__main__":
